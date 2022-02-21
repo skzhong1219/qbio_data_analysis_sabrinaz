@@ -17,7 +17,7 @@ is.na(colData(sum_exp)$age_at_index)
 patients_data = colData(sum_exp)
 counts = assays(sum_exp)$"HTSeq - Counts"
 
-counts = data.frame(counts)
+# counts = data.frame(counts)
 # 4 patients with NA age
 
 NApatientdata = is.na(patients_data$age_at_index)
@@ -54,6 +54,8 @@ resultsNames(dds_obj)  # see what comparisons got run
 results = results(dds_obj, format = "DataFrame", contrast = c("age_category", "young", "old"))
 
 # Exercise 2.2
+str(results)
+head(results)
 my_df = data.frame(x = c('b', 'd', 'c', 'e', 'a'),
                    y = c(2,4,3,5,1))
 
@@ -72,7 +74,17 @@ my_df
 # Exercise 2.3
 row_order = order(results$padj)
 results = results[row_order, ]
+results
 head(results)
+
+# choosing SCARNA5 gene
+which(rownames(counts) == "SCARNA5")
+
+# This gene is more highly expressed in old patients. 
+# The full name of the gene is Small Cajal Body-Specific RNA 5. They are a type of snoRNA, and their
+# primary function involves the biogenesis of snRNPs and guiding the modification of RNA polymerase
+# II transcribed spliceosomal RNA U5. 
+
 
 # Exercise 2.4
 log2FoldChange_threshold = 1
@@ -90,7 +102,7 @@ p_threshold = 0.05  # set a threshold of adjusted p-value being <= 0.05
 # be sure to relabel the axes!
 # note: you can perform the log transformation directly in the plot function
 plot(x = results$log2FoldChange,
-     y = -log10(padj),
+     y = -log10(results$padj),
      xlab = "Log 2 Fold Change (young/old)", # be sure the specify that it's young over old!
      ylab = "-log10 (adjusted) p-value",
      pch = 20) # smaller solid circles
@@ -101,6 +113,6 @@ plot(x = results$log2FoldChange,
 abline(v=c(-log2(fc_threshold), log2(fc_threshold)), h= c(-log10(p_threshold)), col="green")
 
 # Exercise 2.6
-write.csv(x = DATAFRAME,
+write.csv(x = results,
           file = "/Users/sabrinazhong/Desktop/USC/Spring_2022/QBIO490/qbio_data_analysis_sabrinaz/week6_DESeq2/results.csv",
-          row.names - FALSE)
+          row.names = FALSE)
